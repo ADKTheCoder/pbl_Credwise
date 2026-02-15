@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>CredWise Dashboard</title>
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+</head>
+
+<body>
+
+<div class="app">
+
+  <!-- ==========================================================
+       SIDEBAR
+  =========================================================== -->
+  <div class="sidebar">
+
+    <!-- Sidebar Toggle -->
+    <div class="sidebar-toggle" onclick="toggleSidebar()">☰</div>
+
+    <div class="logo">CredWise</div>
+
+    <ul>
+      <li class="active" onclick="switchPage('dashboardSection', this)">Dashboard</li>
+      <li onclick="switchPage('cardsSection', this)">Cards</li>
+      <li onclick="switchPage('emiSection', this)">EMIs</li>
+      <li onclick="switchPage('aiSection', this)">AI Analysis</li>
+      <li onclick="switchPage('bankSection', this)">Bank Info</li>
+    </ul>
+
+    <div class="logout-btn" onclick="logout()">Logout</div>
+  </div>
+
+
+
+  <!-- ==========================================================
+       MAIN CONTENT
+  =========================================================== -->
+  <div class="content">
+
+    <!-- ================= DASHBOARD ================= -->
+    <div id="dashboardSection" class="section">
+
+      <h2>Dashboard Overview</h2>
+
+      <!-- ================= METRICS ================= -->
+      <div class="summary-grid">
+
+        <div class="metric-card">
+          <p>Total Credit Limit</p>
+          <h3 id="totalLimit">₹0</h3>
+        </div>
+
+        <div class="metric-card">
+          <p>Total Outstanding</p>
+          <h3 id="totalOutstanding">₹0</h3>
+        </div>
+
+        <div class="metric-card">
+          <p>Monthly EMI Burden</p>
+          <h3 id="totalEmi">₹0</h3>
+        </div>
+
+        <div class="metric-card">
+          <p>CIBIL Score</p>
+          <h3 id="cibilScore">0</h3>
+        </div>
+
+      </div>
+
+
+      <!-- ================= UTILIZATION + DUES ================= -->
+      <div class="summary-grid">
+
+        <div class="metric-card">
+          <p>Credit Utilization</p>
+          <h3 id="utilization">0%</h3>
+        </div>
+
+        <div class="due-box">
+          <h3>Upcoming Due Dates</h3>
+          <div id="dueList"></div>
+        </div>
+
+      </div>
+
+
+      <!-- ================= CHARTS ================= -->
+      <div class="chart-row">
+
+        <div class="chart-container small">
+          <h4 style="margin-bottom:15px;">Credit Usage</h4>
+          <canvas id="utilChart"></canvas>
+        </div>
+
+        <div class="chart-container small">
+          <h4 style="margin-bottom:15px;">Card Distribution</h4>
+          <canvas id="cardChart"></canvas>
+        </div>
+
+      </div>
+
+
+      <!-- ================= AI INSIGHT ================= -->
+      <div class="ai-box">
+        <h3>AI Credit Insight</h3>
+        <p id="aiInsight">Analyzing your credit behavior...</p>
+      </div>
+
+    </div>
+
+
+
+    <!-- ================= CARDS SECTION ================= -->
+    <div id="cardsSection" class="section hidden">
+
+      <h2>Manage Credit Cards</h2>
+
+      <div class="form-row">
+        <input id="cardName" placeholder="Card Name">
+        <input id="cardLimit" type="number" placeholder="Credit Limit">
+        <input id="cardOutstanding" type="number" placeholder="Outstanding">
+        <input id="cardDueDate" type="date">
+        <button onclick="addCard()">Add Card</button>
+      </div>
+
+      <div id="cardList" class="card-grid"></div>
+
+    </div>
+
+
+
+    <!-- ================= EMI SECTION ================= -->
+    <div id="emiSection" class="section hidden">
+
+      <h2>Manage EMIs</h2>
+
+      <div class="form-row">
+        <input id="emiName" placeholder="EMI Name">
+        <input id="emiAmount" type="number" placeholder="Monthly EMI">
+        <input id="emiMonths" type="number" placeholder="Tenure (Months)">
+        <input id="emiInterest" type="number" placeholder="Interest % (Optional)">
+        <button onclick="addEmi()">Add EMI</button>
+      </div>
+
+      <div id="emiList" class="card-grid"></div>
+
+    </div>
+
+
+
+    <!-- ================= AI ANALYSIS ================= -->
+    <div id="aiSection" class="section hidden">
+      <div class="coming-card">
+        Advanced AI Optimization Engine – Coming Soon
+      </div>
+    </div>
+
+
+
+    <!-- ================= BANK INFO ================= -->
+    <div id="bankSection" class="section hidden">
+      <div class="coming-card">
+        Bank Integration & Aggregation – Coming Soon
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+
+<!-- ==========================================================
+     FIREBASE CONFIG
+========================================================== -->
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyClVv7hPyDknuNRp7FuNd6IQIsdVzldSZI",
+  authDomain: "credwise-be78b.firebaseapp.com",
+  projectId: "credwise-be78b"
+};
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+</script>
+
+<script src="dashboard.js"></script>
+
+</body>
+</html>

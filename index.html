@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>CredWise – Secure Login</title>
+
+  <!-- Responsive -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+</head>
+
+<body class="auth-body">
+
+  <!-- ==========================================================
+       AUTH CONTAINER
+  =========================================================== -->
+  <div class="auth-container">
+
+    <!-- Logo / Branding -->
+    <div class="auth-header">
+      <h2>CredWise</h2>
+      <p class="auth-subtitle">Credit Intelligence Platform</p>
+    </div>
+
+    <!-- Email -->
+    <input 
+      id="email" 
+      type="email" 
+      placeholder="Enter your email"
+      autocomplete="email"
+    >
+
+    <!-- Password -->
+    <input 
+      id="password" 
+      type="password" 
+      placeholder="Enter your password"
+      autocomplete="current-password"
+    >
+
+    <!-- Login Button -->
+    <button id="loginBtn" onclick="login()">
+      <span id="loginText">Login</span>
+    </button>
+
+    <!-- Register Button -->
+    <button class="outline" onclick="register()">
+      Create Account
+    </button>
+
+    <!-- Status / Error Message -->
+    <p id="authMessage" class="auth-message"></p>
+
+  </div>
+
+
+
+  <!-- ==========================================================
+       FIREBASE CONFIGURATION
+  =========================================================== -->
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyClVv7hPyDknuNRp7FuNd6IQIsdVzldSZI",
+      authDomain: "credwise-be78b.firebaseapp.com",
+      projectId: "credwise-be78b"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+  </script>
+
+  <!-- ==========================================================
+       AUTH LOGIC
+  =========================================================== -->
+  <script src="auth.js"></script>
+
+</body>
+</html>

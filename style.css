@@ -1,0 +1,446 @@
+/* ==========================================================
+   GLOBAL RESET + FONT
+========================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Inter', sans-serif;
+}
+
+body {
+  background: radial-gradient(circle at 20% 20%, #14141c, #0c0c12 65%);
+  color: #ffffff;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Smooth Micro Interactions */
+* {
+  transition: background 0.25s ease,
+              color 0.25s ease,
+              border 0.25s ease,
+              transform 0.25s ease,
+              box-shadow 0.25s ease,
+              width 0.3s ease,
+              opacity 0.3s ease;
+}
+
+/* ==========================================================
+   AUTH PAGE
+========================================================== */
+
+.auth-body {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.auth-container {
+  width: 380px;
+  padding: 50px;
+  border-radius: 22px;
+  background: rgba(20,20,28,0.92);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255,255,255,0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  animation: fadeIn 0.5s ease;
+  box-shadow: 0 0 50px rgba(0,0,0,0.45);
+}
+
+.auth-container h2 {
+  text-align: center;
+  font-weight: 600;
+  letter-spacing: 1px;
+  font-size: 22px;
+}
+
+.auth-container input {
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: #1a1a24;
+  color: white;
+}
+
+.auth-container input:focus {
+  outline: none;
+  border: 1px solid white;
+}
+
+.auth-container button {
+  padding: 14px;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.auth-container button:first-of-type {
+  background: white;
+  color: black;
+}
+
+.auth-container button.outline {
+  background: transparent;
+  border: 1px solid white;
+  color: white;
+}
+
+.auth-container button:hover {
+  transform: translateY(-3px);
+}
+
+/* ==========================================================
+   APP LAYOUT
+========================================================== */
+
+.app {
+  display: flex;
+  height: 100vh;
+}
+
+/* ==========================================================
+   SIDEBAR
+========================================================== */
+
+.sidebar {
+  width: 260px;
+  padding: 40px 26px;
+  background: linear-gradient(180deg, #111118, #0e0e14);
+  border-right: 1px solid rgba(255,255,255,0.05);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.sidebar.collapsed {
+  width: 85px;
+}
+
+.sidebar.collapsed .logo {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.sidebar.collapsed li {
+  font-size: 0;
+}
+
+.sidebar-toggle {
+  font-size: 22px;
+  margin-bottom: 28px;
+  cursor: pointer;
+  color: #888;
+}
+
+.sidebar-toggle:hover {
+  color: white;
+}
+
+.logo {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 40px;
+  letter-spacing: 1px;
+}
+
+/* Sidebar Navigation */
+.sidebar ul {
+  list-style: none;
+  flex-grow: 1;
+}
+
+.sidebar li {
+  padding: 14px 0;
+  color: #7a7a8c;
+  cursor: pointer;
+  font-size: 15px;
+  letter-spacing: 0.3px;
+}
+
+.sidebar li:hover {
+  color: white;
+  transform: translateX(6px);
+}
+
+.sidebar li.active {
+  color: white;
+}
+
+/* Logout at bottom */
+.logout-btn {
+  margin-top: auto;
+  padding-top: 30px;
+  color: #888;
+  cursor: pointer;
+}
+
+.logout-btn:hover {
+  color: white;
+}
+
+/* ==========================================================
+   MAIN CONTENT
+========================================================== */
+
+.content {
+  flex: 1;
+  padding: 60px;
+  overflow-y: auto;
+  animation: fadeIn 0.4s ease;
+}
+
+.content h2 {
+  margin-bottom: 35px;
+  font-weight: 500;
+}
+
+/* ==========================================================
+   SECTION CONTROL
+========================================================== */
+
+.section {
+  animation: fadeIn 0.3s ease;
+}
+
+.hidden {
+  display: none;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==========================================================
+   DASHBOARD METRICS
+========================================================== */
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 22px;
+  margin-bottom: 35px;
+}
+
+.metric-card {
+  padding: 26px;
+  border-radius: 18px;
+  background: linear-gradient(145deg, #181823, #12121a);
+  border: 1px solid rgba(255,255,255,0.05);
+}
+
+.metric-card:hover {
+  transform: translateY(-6px);
+  border: 1px solid rgba(255,255,255,0.12);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+}
+
+.metric-card p {
+  font-size: 13px;
+  color: #8a8aa3;
+}
+
+.metric-card h3 {
+  margin-top: 12px;
+  font-size: 22px;
+}
+
+/* CIBIL COLOR STATES */
+.cibil-green { color: #4caf50; }
+.cibil-yellow { color: #ffb300; }
+.cibil-red { color: #ff5252; }
+
+/* ==========================================================
+   DUE DATE BOX
+========================================================== */
+
+.due-box {
+  background: #171721;
+  padding: 20px;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,0.05);
+  margin-bottom: 30px;
+}
+
+.due-box h3 {
+  margin-bottom: 12px;
+}
+
+.due-box p {
+  color: #bdbdd8;
+  margin-bottom: 6px;
+  font-size: 14px;
+}
+
+/* ==========================================================
+   CHARTS (Smaller & Balanced)
+========================================================== */
+
+.chart-row {
+  display: flex;
+  gap: 18px;
+  margin-bottom: 30px;
+}
+
+.chart-container.small {
+  flex: 1;
+  background: #171721;
+  padding: 18px;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,0.05);
+  height: 240px;
+}
+
+.chart-container.small canvas {
+  max-height: 200px !important;
+}
+
+/* ==========================================================
+   FORMS
+========================================================== */
+
+.form-row {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+}
+
+.form-row input {
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: #1c1c26;
+  color: white;
+  min-width: 170px;
+}
+
+.form-row input:focus {
+  outline: none;
+  border: 1px solid white;
+}
+
+.form-row button {
+  padding: 12px 18px;
+  border-radius: 12px;
+  border: none;
+  background: white;
+  color: black;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.form-row button:hover {
+  transform: translateY(-4px);
+}
+
+/* ==========================================================
+   CARD GRID
+========================================================== */
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 18px;
+}
+
+.card-box {
+  padding: 18px;
+  border-radius: 16px;
+  background: #181822;
+  border: 1px solid rgba(255,255,255,0.05);
+}
+
+.card-box:hover {
+  transform: translateY(-5px);
+  border: 1px solid rgba(255,255,255,0.12);
+}
+
+.card-box strong {
+  display: block;
+  margin-bottom: 8px;
+}
+
+/* ==========================================================
+   AI INSIGHT BOX
+========================================================== */
+
+.ai-box {
+  padding: 26px;
+  border-radius: 18px;
+  background: linear-gradient(145deg, #1a1a26, #14141d);
+  border: 1px solid rgba(255,255,255,0.05);
+  margin-top: 25px;
+}
+
+.ai-box p {
+  color: #b0b0c3;
+  line-height: 1.6;
+  font-size: 14px;
+}
+
+/* ==========================================================
+   COMING SOON
+========================================================== */
+
+.coming-card {
+  padding: 60px;
+  border-radius: 20px;
+  text-align: center;
+  font-size: 18px;
+  background: #161620;
+  border: 1px dashed rgba(255,255,255,0.18);
+  color: #999;
+}
+/* ===============================
+   CIBIL COLOR CODING
+================================= */
+
+.cibil-green {
+  color: #6dff8a;
+}
+
+.cibil-yellow {
+  color: #ffd86d;
+}
+
+.cibil-red {
+  color: #ff6b6b;
+}
+
+
+/* ===============================
+   OVERDUE DUE DATE HIGHLIGHT
+================================= */
+
+.overdue {
+  color: #ff6b6b;
+  font-weight: 600;
+}
+
+
+/* ===============================
+   DELETE BUTTON
+================================= */
+
+.card-box button {
+  margin-top: 10px;
+  padding: 6px 12px;
+  font-size: 12px;
+  border-radius: 8px;
+  border: none;
+  background: #ff6b6b;
+  color: white;
+  cursor: pointer;
+}
+
+.card-box button:hover {
+  background: #ff4c4c;
+}
