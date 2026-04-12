@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CredWise — Login</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+  background:#09090f;
+  color:#fff;
+  font-family:'DM Sans',sans-serif;
+  height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+}
+.bg-glow{
+  position:fixed;top:0;left:0;right:0;bottom:0;
+  background:radial-gradient(ellipse at 30% 50%, rgba(124,106,255,0.06) 0%, transparent 60%),
+             radial-gradient(ellipse at 70% 50%, rgba(255,107,157,0.04) 0%, transparent 60%);
+  pointer-events:none;
+}
+.card{
+  width:380px;
+  background:rgba(15,15,24,0.95);
+  border:1px solid rgba(255,255,255,0.07);
+  border-radius:22px;
+  padding:44px 40px;
+  backdrop-filter:blur(20px);
+  animation:slideUp 0.4s ease;
+  box-shadow:0 24px 80px rgba(0,0,0,0.5);
+}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+.logo{
+  text-align:center;
+  font-size:26px;
+  font-weight:600;
+  letter-spacing:0.5px;
+  margin-bottom:6px;
+  background:linear-gradient(135deg,#fff 0%,rgba(255,255,255,0.6) 100%);
+  -webkit-background-clip:text;
+  background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+.tagline{
+  text-align:center;
+  font-size:12px;
+  color:#555;
+  margin-bottom:36px;
+  letter-spacing:0.3px;
+}
+label{
+  display:block;
+  font-size:11px;
+  font-weight:500;
+  color:#666;
+  margin-bottom:6px;
+  letter-spacing:0.3px;
+  text-transform:uppercase;
+}
+input{
+  width:100%;
+  padding:13px 16px;
+  border-radius:11px;
+  border:1px solid rgba(255,255,255,0.08);
+  background:#141420;
+  color:#fff;
+  font-size:13px;
+  font-family:'DM Sans',sans-serif;
+  outline:none;
+  margin-bottom:14px;
+  transition:border-color 0.2s;
+}
+input:focus{border-color:rgba(124,106,255,0.5);}
+input::placeholder{color:#444;}
+.btn-login{
+  width:100%;
+  padding:13px;
+  border-radius:11px;
+  border:none;
+  background:#fff;
+  color:#000;
+  font-weight:600;
+  font-size:13px;
+  font-family:'DM Sans',sans-serif;
+  cursor:pointer;
+  transition:all 0.2s;
+  margin-bottom:10px;
+}
+.btn-login:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(255,255,255,0.12);}
+.btn-login:disabled{opacity:0.5;cursor:not-allowed;transform:none;}
+.btn-register{
+  width:100%;
+  padding:13px;
+  border-radius:11px;
+  border:1px solid rgba(255,255,255,0.1);
+  background:transparent;
+  color:#aaa;
+  font-weight:500;
+  font-size:13px;
+  font-family:'DM Sans',sans-serif;
+  cursor:pointer;
+  transition:all 0.2s;
+}
+.btn-register:hover{border-color:rgba(255,255,255,0.25);color:#fff;}
+.msg{
+  text-align:center;
+  font-size:12px;
+  margin-top:14px;
+  min-height:18px;
+  transition:all 0.2s;
+}
+.msg.err{color:#ff5c5c;}
+.msg.ok{color:#3dffa0;}
+.divider{
+  display:flex;align-items:center;gap:12px;
+  margin:14px 0;
+}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:rgba(255,255,255,0.07);}
+.divider span{font-size:11px;color:#444;}
+</style>
+</head>
+<body>
+<div class="bg-glow"></div>
+<div class="card">
+  <div class="logo">CredWise</div>
+  <div class="tagline">Credit Intelligence Platform</div>
+  <label>Email</label>
+  <input id="email" type="email" placeholder="you@example.com" autocomplete="email">
+  <label>Password</label>
+  <input id="password" type="password" placeholder="Min. 6 characters" autocomplete="current-password">
+  <button class="btn-login" id="loginBtn" onclick="login()">Login</button>
+  <div class="divider"><span>or</span></div>
+  <button class="btn-register" onclick="register()">Create Account</button>
+  <div class="msg" id="msg"></div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script>
+if (!firebase.apps.length) {
+  firebase.initializeApp({
+    apiKey:"AIzaSyClVv7hPyDknuNRp7FuNd6IQIsdVzldSZI",
+    authDomain:"credwise-be78b.firebaseapp.com",
+    projectId:"credwise-be78b"
+  });
+}
+const auth = firebase.auth();
+
+auth.onAuthStateChanged(user => {
+  if(user) window.location.href = 'dashboard.html';
+});
+
+function showMsg(t, type='err'){
+  const m = document.getElementById('msg');
+  m.innerText = t;
+  m.className = 'msg ' + type;
+}
+
+function setLoading(state){
+  const btn = document.getElementById('loginBtn');
+  btn.disabled = state;
+  btn.innerText = state ? 'Please wait...' : 'Login';
+}
+
+function login(){
+  const email = document.getElementById('email').value.trim();
+  const pass = document.getElementById('password').value.trim();
+  if(!email || !pass){ showMsg('Email and password are required.'); return; }
+  setLoading(true);
+  auth.signInWithEmailAndPassword(email, pass)
+    .then(() => window.location.href = 'dashboard.html')
+    .catch(err => { showMsg(fmtErr(err.code)); setLoading(false); });
+}
+
+function register(){
+  const email = document.getElementById('email').value.trim();
+  const pass = document.getElementById('password').value.trim();
+  if(!email || !pass){ showMsg('Email and password are required.'); return; }
+  if(pass.length < 6){ showMsg('Password must be at least 6 characters.'); return; }
+  setLoading(true);
+  auth.createUserWithEmailAndPassword(email, pass)
+    .then(() => { showMsg('Account created! Redirecting...','ok'); setTimeout(()=>window.location.href='dashboard.html',800); })
+    .catch(err => { showMsg(fmtErr(err.code)); setLoading(false); });
+}
+
+function fmtErr(code){
+  const map = {
+    'auth/user-not-found':'No account found with this email.',
+    'auth/wrong-password':'Incorrect password.',
+    'auth/email-already-in-use':'Email already registered.',
+    'auth/invalid-email':'Invalid email address.',
+    'auth/too-many-requests':'Too many attempts. Try again later.',
+    'auth/invalid-credential':'Incorrect email or password.'
+  };
+  return map[code] || 'Authentication failed. Please try again.';
+}
+
+document.getElementById('password').addEventListener('keydown', e => { if(e.key==='Enter') login(); });
+</script>
+</body>
+</html>

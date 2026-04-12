@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- PDF.js (REQUIRED FOR STATEMENT AI) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>
+  pdfjsLib.GlobalWorkerOptions.workerSrc =
+    "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CredWise Dashboard</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<div class="app">
+
+<!-- ===== SIDEBAR ===== -->
+<div class="sidebar" id="sidebar">
+  <div class="sb-header">
+    <div class="sb-logo">CredWise</div>
+    <button class="sb-toggle" onclick="toggleSidebar()">☰</button>
+  </div>
+  <div class="sb-nav">
+    <div class="nav-section">Main</div>
+    <div class="nav-item active" onclick="go('dashboard',this)"><span class="nav-label">Dashboard</span></div>
+    <div class="nav-item" onclick="go('cards',this)"><span class="nav-label">My Cards</span></div>
+    <div class="nav-item" onclick="go('emis',this)"><span class="nav-label">My EMIs</span></div>
+    <div class="nav-item" onclick="go('bnpl',this)"><span class="nav-label">BNPL / Pay Later</span></div>
+    <div class="nav-section" style="margin-top:8px;">AI Tools</div>
+    <div class="nav-item" onclick="go('analyzer',this)"><span class="nav-label">Statement AI</span></div>
+    <div class="nav-item" onclick="go('rewards',this)"><span class="nav-label">Rewards Optimizer</span></div>
+  </div>
+  <div class="sb-footer">
+    <div class="logout-btn" onclick="doLogout()"><span class="nav-label">Logout</span></div>
+  </div>
+</div>
+
+<!-- ===== MAIN ===== -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title" id="topTitle">Dashboard</div>
+    <div class="topbar-badge" id="topBadge">Overview</div>
+    <div class="topbar-right">
+      <div class="topbar-time" id="topTime"></div>
+      <div class="avatar" id="userAvatar">?</div>
+    </div>
+  </div>
+
+  <div class="content" id="mainContent">
+
+    <!-- ======= DASHBOARD ======= -->
+    <div class="section active" id="sec-dashboard">
+      <div class="box" style="margin-bottom:16px;">
+        <div class="box-title">Monthly Income Setup</div>
+        <div class="box-sub">Enter your in-hand monthly income to unlock DTI checking.</div>
+        <div class="field-row" style="flex-wrap:wrap;gap:8px;">
+          <input class="field" id="u-income" type="number" placeholder="Monthly Income (₹)" style="min-width:160px;" oninput="saveIncome()">
+        </div>
+      </div>
+
+      <div class="g3">
+        <div class="metric-card c-blue">
+          <div class="m-label">Total Credit Limit</div>
+          <div class="m-value" id="m-limit">₹0</div>
+          <div class="m-sub" id="m-limit-sub">Loading...</div>
+          <div class="m-bar"><div class="m-bar-fill" id="bar-limit" style="width:0%;background:var(--blue);"></div></div>
+        </div>
+        <div class="metric-card c-green">
+          <div class="m-label">Total Outstanding</div>
+          <div class="m-value" id="m-out">₹0</div>
+          <div class="m-sub" id="m-out-sub">Across all cards</div>
+          <div class="m-bar"><div class="m-bar-fill" id="bar-out" style="width:0%;background:var(--green);"></div></div>
+        </div>
+        <div class="metric-card c-yellow">
+          <div class="m-label">Monthly EMI Burden</div>
+          <div class="m-value" id="m-emi">₹0</div>
+          <div class="m-sub" id="m-emi-sub">Active EMIs</div>
+          <div class="m-bar"><div class="m-bar-fill" id="bar-emi" style="width:0%;background:var(--yellow);"></div></div>
+        </div>
+        <div class="metric-card c-purple">
+          <div class="m-label">CIBIL Score</div>
+          <div class="m-value" id="m-cibil">—</div>
+          <div class="m-sub" id="m-cibil-sub">Calculating...</div>
+          <div class="m-bar"><div class="m-bar-fill" id="bar-cibil" style="width:0%;background:var(--accent);"></div></div>
+        </div>
+        <div class="metric-card" style="border-left: 2px solid var(--accent);">
+          <div class="m-label">Cash Left (Post-EMI)</div>
+          <div class="m-value" id="m-cash">—</div>
+          <div class="m-sub" id="m-cash-sub">Set income above</div>
+          <div class="m-bar"><div class="m-bar-fill" id="bar-cash" style="width:0%;background:var(--accent);"></div></div>
+        </div>
+        <div class="metric-card" style="border-left: 2px solid #ffcc44;">
+          <div class="m-label">Debt-to-Income (DTI)</div>
+          <div class="m-value" id="m-dti">—</div>
+          <div class="m-sub" id="m-dti-sub">Set income above</div>
+          <div class="m-bar"><div class="m-bar-fill" id="bar-dti" style="width:0%;background:#ffcc44;"></div></div>
+        </div>
+      </div>
+
+      <div class="g2" style="grid-template-columns:1fr 1.5fr;">
+        <div class="box">
+          <div class="box-title">Credit Utilization</div>
+          <div class="box-sub" id="util-sub">Loading...</div>
+          <div style="position:relative;width:130px;height:130px;margin:0 auto 12px;">
+            <canvas id="utilChart"></canvas>
+            <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;">
+              <div style="font-size:20px;font-weight:600;font-family:'DM Mono',monospace;" id="utilPct">0%</div>
+              <div style="font-size:10px;color:var(--muted);">Used</div>
+            </div>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);">
+            <span id="util-used">₹0 used</span><span id="util-free">₹0 free</span>
+          </div>
+        </div>
+        <div class="box">
+          <div class="box-title">Upcoming Due Dates</div>
+          <div class="box-sub">Sorted by urgency</div>
+          <div id="dueList"><div class="empty">No cards added yet</div></div>
+        </div>
+      </div>
+
+      <div class="g2">
+        <div class="chart-box">
+          <div class="chart-title">Outstanding per Card</div>
+          <div class="canvas-wrap"><canvas id="cardChart"></canvas></div>
+        </div>
+        <div class="ai-box">
+          <div class="ai-header">
+            <div class="ai-dot"></div>
+            <span class="ai-label">AI Credit Insight</span>
+            <span class="badge badge-purple" style="margin-left:auto;">Live</span>
+          </div>
+          <div class="ai-text" id="dashInsight">Add your cards and EMIs to get a personalized AI credit insight.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======= MY CARDS ======= -->
+    <div class="section" id="sec-cards">
+      <div class="box" style="margin-bottom:16px;">
+        <div class="box-title">Add Credit Card</div>
+        <div class="box-sub">Your data is saved securely to your account.</div>
+        <div class="field-row" style="flex-wrap:wrap;gap:8px;">
+          <input class="field" id="c-name" placeholder="Card Name (e.g. HDFC Regalia)" style="min-width:160px;">
+          <input class="field" id="c-limit" type="number" placeholder="Credit Limit (₹)" style="min-width:140px;">
+          <input class="field" id="c-out" type="number" placeholder="Outstanding (₹)" style="min-width:140px;">
+          <input class="field" id="c-due" type="date" style="min-width:140px;">
+          <select class="field" id="c-rtype" style="min-width:140px;">
+            <option value="shopping">Shopping</option>
+            <option value="travel">Travel</option>
+            <option value="fuel">Fuel</option>
+            <option value="other">Other</option>
+          </select>
+          <input class="field" id="c-rrate" type="number" placeholder="Reward Rate (%)" style="min-width:140px;">
+          <button class="btn btn-primary" onclick="addCard()">+ Add Card</button>
+        </div>
+      </div>
+      <div class="gauto" id="cardList"><div class="empty">No cards yet. Add your first card above.</div></div>
+    </div>
+
+    <!-- ======= MY EMIS ======= -->
+    <div class="section" id="sec-emis">
+      <div class="box" style="margin-bottom:16px;">
+        <div class="box-title">Add EMI</div>
+        <div class="box-sub">Track loans, EMIs, and recurring debt payments.</div>
+        <div class="field-row" style="flex-wrap:wrap;gap:8px;">
+          <input class="field" id="e-name" placeholder="EMI name (e.g. MacBook Loan)" style="min-width:160px;">
+          <input class="field" id="e-amt" type="number" placeholder="Monthly EMI (₹)" style="min-width:140px;">
+          <input class="field" id="e-months" type="number" placeholder="Tenure (months)" style="min-width:130px;">
+          <input class="field" id="e-due" type="date" style="min-width:140px;">
+          <button class="btn btn-primary" onclick="addEmi()">+ Add EMI</button>
+        </div>
+      </div>
+      <div id="emiList"><div class="empty">No EMIs yet. Add your first EMI above.</div></div>
+    </div>
+
+    <!-- ======= BNPL ======= -->
+    <div class="section" id="sec-bnpl"> 
+      <div class="box" style="margin-bottom:16px;">
+        <div class="box-title">Add BNPL</div>
+        <div class="box-sub">Track your Buy Now Pay Later bills.</div>
+        <div class="field-row" style="flex-wrap:wrap;gap:8px;">
+          <input class="field" id="b-name" placeholder="Platform (e.g. Amazon Pay)" style="min-width:160px;">
+          <input class="field" id="b-amt" type="number" placeholder="Outstanding (₹)" style="min-width:140px;">
+          <input class="field" id="b-due" type="date" style="min-width:140px;">
+          <button class="btn btn-primary" onclick="addBnpl()">+ Add BNPL</button>
+        </div>
+      </div>
+      <div id="bnplList"><div class="empty">No BNPL yet. Add your first above.</div></div>
+    </div>
+
+    <!-- ======= STATEMENT AI ======= -->
+    <div class="section" id="sec-analyzer">
+      <div class="box" style="margin-bottom:16px;">
+        <div class="box-title">Bank Statement Analyzer <span class="badge badge-purple" style="margin-left:8px;">AI Powered</span></div>
+        <div class="box-sub">Upload a PDF bank statement. We completely extract data client-side before utilizing Gemini.</div>
+        <div class="pdf-zone" onclick="document.getElementById('pdfIn').click()">
+          <div class="pdf-icon" id="pdfIcon"></div>
+          <p id="pdfTxt"><strong>Click to upload</strong> your statement</p>
+        </div>
+        <input type="file" id="pdfIn" accept="application/pdf" style="display:none;" onchange="readPDF(event)">
+        <button class="btn btn-primary btn-full" id="analyzeBtn" onclick="analyzeStatement()" disabled>Analyze Statement</button>
+        <div id="analyzeLoading" class="loading-row" style="display:none;"><div class="spin"></div><span>Gemini is analyzing your spending...</span></div>
+      </div>
+      <div id="analyzeOut" style="display:none;">
+        <div class="box-title" style="margin-bottom:12px;">AI Deep Insight</div>
+        <div class="ai-box" style="margin-bottom:16px;background:var(--bg);">
+          <div class="ai-text" id="analysisText"></div>
+        </div>
+        <div class="g4" id="catGrid" style="grid-template-columns:1fr 1fr;gap:12px;"></div>
+      </div>
+    </div>
+
+    <!-- ======= REWARDS OPTIMIZER ======= -->
+    <div class="section" id="sec-rewards">
+      <div class="box" style="margin-bottom:16px;">
+        <div class="box-title">Credit Card Rewards Optimizer <span class="badge badge-purple" style="margin-left:8px;">Rules Engine</span></div>
+        <div class="box-sub">Enter your estimated monthly category spends. We'll match you with the best card from your wallet.</div>
+        <div class="field-row" style="flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+          <input class="field" id="r-shop" type="number" placeholder="Shopping Spend (₹)" style="min-width:140px;">
+          <input class="field" id="r-travel" type="number" placeholder="Travel Spend (₹)" style="min-width:140px;">
+          <input class="field" id="r-fuel" type="number" placeholder="Fuel Spend (₹)" style="min-width:140px;">
+        </div>
+        <button class="btn btn-primary btn-full" onclick="optimizeRewards()">🔍 Find Best Cards</button>
+      </div>
+      <div class="g3" id="recGrid" style="display:none;"></div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+</div><!-- /app -->
+
+<!-- Firebase + App Config -->
+<!-- Firebase initialization is properly handled inside dashboard.js -->
+<script src="dashboard.js"></script>
+</body>
+</html>
